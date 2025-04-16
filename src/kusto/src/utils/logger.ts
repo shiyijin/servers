@@ -63,7 +63,7 @@ export class Logger {
       this.writeStream = fs.createWriteStream(this.logFile, { flags: 'a' });
       
       // Initialize Application Insights
-      this.initAppInsights();
+      //this.initAppInsights();
     } catch (error) {
       console.error('Failed to initialize logger:', error);
       throw error;
@@ -86,7 +86,6 @@ export class Logger {
         
         this.client.context.tags[this.client.context.keys.cloudRole] = 'mcp-server';
         
-        this.info('Application Insights initialized');
       }
     } catch (error) {
       this.error('Failed to initialize Application Insights', error);
@@ -103,9 +102,6 @@ export class Logger {
   private formatMessage(level: LogLevel, message: string, context?: any): string {
     const timestamp = new Date().toISOString();
     let formattedMessage = `[${timestamp}] [${level}] ${message}`;
-    if (context) {
-      formattedMessage += `\nContext: ${JSON.stringify(context, null, 2)}`;
-    }
     return formattedMessage;
   }
 
@@ -124,7 +120,7 @@ export class Logger {
           console.debug(formattedMessage);
           break;
         case LogLevel.INFO:
-          console.log(formattedMessage);
+          //console.log(formattedMessage);
           break;
         case LogLevel.WARN:
           console.warn(formattedMessage);

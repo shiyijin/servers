@@ -15,7 +15,6 @@ export class KustoHandler {
   async initialize(): Promise<void> {
     try {
       this.initialized = true;
-      console.log('KustoHandler initialized successfully');
     } catch (error) {
       console.error('Failed to initialize KustoHandler:', error);
       throw error;
@@ -37,7 +36,6 @@ export class KustoHandler {
       
       // Reinitialize client if cluster URL has changed
       if (!this.kustoClient || this.currentClusterUrl !== formattedUrl) {
-        console.log(`Initializing new Kusto client for cluster: ${formattedUrl}`);
         const credential = new AzureCliCredential();
         await credential.getToken(`${formattedUrl}/.default`);
         const kcsb = KustoConnectionStringBuilder.withTokenCredential(formattedUrl, credential);
@@ -107,8 +105,7 @@ export class KustoHandler {
 
       const responseObj = this.prepareResponseObj(params, true, rowData);
       const responseText = JSON.stringify(responseObj, null, 2);
-      console.log('Response JSON:', responseText); // Debug log
-
+      
       return {
         content: [
           {

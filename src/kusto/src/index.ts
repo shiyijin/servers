@@ -64,7 +64,6 @@ export class KustoServer {
     protected async initializeHandlers(): Promise<void> {
         await this.kustoHandler.initialize();
         this.setupToolHandlers();
-        console.log("Kusto tools handlers initialized successfully");
     }
 
     protected setupToolHandlers() {
