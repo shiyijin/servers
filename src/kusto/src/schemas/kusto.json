@@ -1,25 +1,25 @@
 {
-    "execute_kusto_query": {
-      "name": "execute_kusto_query",
-      "description": "Execute a Kusto query against a specified or default cluster and database",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string",
-            "description": "The Kusto query to execute"
-          },
-          "database": {
-            "type": "string",
-            "description": "The database to query (optional if KUSTO_DEFAULT_DATABASE environment variable is set)"
-          },
-          "clusterUrl": {
-            "type": "string",
-            "description": "The Kusto cluster URL (optional if KUSTO_DEFAULT_CLUSTER environment variable is set)"
-          }
+  "execute_kusto_query": {
+    "name": "execute_kusto_query",
+    "description": "Execute a Kusto query against a specified or default cluster and database",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "The Kusto query to execute"
         },
-        "required": ["query"],
-        "additionalProperties": false
-      }
+        "database": {
+          "type": "string",
+          "description": "The database to query (optional if KUSTO_DEFAULT_DATABASE environment variable is set)"
+        },
+        "clusterUrl": {
+          "type": "string",
+          "description": "The Kusto cluster URL (optional if KUSTO_DEFAULT_CLUSTER environment variable is set)"
+        }
+      },
+      "required": ["query"],
+      "additionalProperties": false
     }
   }
+}

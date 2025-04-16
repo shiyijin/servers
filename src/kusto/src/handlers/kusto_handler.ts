@@ -107,19 +107,21 @@ export class KustoHandler {
 
       const responseObj = this.prepareResponseObj(params, true, rowData);
       const responseText = JSON.stringify(responseObj, null, 2);
-      console.log('Response:', responseText); // Debug log
+      console.log('Response JSON:', responseText); // Debug log
 
       return {
-        content: [{
-          type: 'text',
-          text: responseText
-        }]
+        content: [
+          {
+            type: "text",
+            text: responseText
+          }
+        ]
       };
 
     } catch (error: any) {
       const responseObj = this.prepareResponseObj(params, false, undefined, error.message);
       const responseText = JSON.stringify(responseObj, null, 2);
-
+      console.error('Error Response JSON:', responseText);
       return {
         content: [{
           type: 'text',
