@@ -7,7 +7,7 @@ export interface KustoQueryParams {
   clusterUrl?: string;
 }
 
-export class KustoHandler {
+export class ADXHandler {
   private currentClusterUrl: string | null = null;
   private kustoClient: KustoClient | null = null;
   private initialized: boolean = false;
@@ -51,14 +51,11 @@ export class KustoHandler {
   }
 
   private prepareResponseObj(params: KustoQueryParams, success: boolean, data?: any[], error?: string) {
-    const clusterUrl = params.clusterUrl || process.env.KUSTO_DEFAULT_CLUSTER || '';
-    const database = params.database || process.env.KUSTO_DEFAULT_DATABASE || '';
-
     const baseResponse = {
       success,
       input: {
-        clusterUrl: this.formatClusterUrl(clusterUrl),
-        database,
+        clusterUrl: this.formatClusterUrl(params.clusterUrl!),
+        database: params.database,
         query: params.query
       }
     };
@@ -103,6 +100,8 @@ export class KustoHandler {
       const rawData = JSON.parse(rawString);
       const rowData = rawData.data || [];
 
+      params.clusterUrl = clusterUrl;
+      params.database = database;
       const responseObj = this.prepareResponseObj(params, true, rowData);
       const responseText = JSON.stringify(responseObj, null, 2);
       

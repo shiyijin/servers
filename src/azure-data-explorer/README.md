@@ -1,4 +1,4 @@
-# Kusto MCP Server
+# Azure Data Explorer MCP Server
 
 An MCP server implementation for querying data from Azure Data Explorer using KQL(Kusto Query Language).
 

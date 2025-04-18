@@ -23,7 +23,7 @@ These servers aim to demonstrate MCP features and the TypeScript and Python SDKs
 - **[GitLab](src/gitlab)** - GitLab API, enabling project management
 - **[Google Drive](src/gdrive)** - File access and search capabilities for Google Drive
 - **[Google Maps](src/google-maps)** - Location services, directions, and place details
-- **[Kusto](src/kusto)** - Run Kusto queries on a specified or default cluster and database with ease
+- **[Azure Data Explorer](src/azure-data-explorer)** - Query data from Azure Data Explorer using KQL(Kusto Query Language)
 - **[Memory](src/memory)** - Knowledge graph-based persistent memory system
 - **[PostgreSQL](src/postgres)** - Read-only database access with schema inspection
 - **[Puppeteer](src/puppeteer)** - Browser automation and web scraping

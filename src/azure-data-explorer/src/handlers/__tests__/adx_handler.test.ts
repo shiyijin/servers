@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import type { Client as KustoClient } from 'azure-kusto-data';
-import { KustoHandler } from '../kusto_handler';
+import { ADXHandler } from '../adx_handler';
 
 interface MockKustoResult {
   primaryResults: Array<{
@@ -34,7 +34,7 @@ jest.mock('@azure/identity', () => ({
 }));
 
 describe('KustoHandler', () => {
-  let handler: KustoHandler;
+  let handler: ADXHandler;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -44,7 +44,7 @@ describe('KustoHandler', () => {
     process.env.KUSTO_DEFAULT_DATABASE = 'default-db';
 
     // Initialize handler
-    handler = new KustoHandler();
+    handler = new ADXHandler();
   });
 
   describe('initialize', () => {
@@ -62,7 +62,7 @@ describe('KustoHandler', () => {
 
     it('should require initialization before query execution', async () => {
       // Create new instance without initialization
-      handler = new KustoHandler();
+      handler = new ADXHandler();
       
       const result = await handler.executeQuery({
         query: 'test query'

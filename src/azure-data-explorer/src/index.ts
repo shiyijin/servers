@@ -2,7 +2,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { ErrorCode, McpError, CallToolRequestSchema, ListToolsRequestSchema, } from "@modelcontextprotocol/sdk/types.js";
 import { createRequire } from "module";
-import { KustoHandler } from "./handlers/kusto_handler.js";
+import { ADXHandler } from "./handlers/adx_handler.js";
 import { logger, EventType } from "./utils/logger.js";
 
 import * as fs from 'node:fs';
@@ -10,22 +10,22 @@ import * as path from 'node:path';
 
 const require = createRequire(import.meta.url);
 
-export class KustoServer {
+export class ADXServer {
     protected server: Server;
     protected name: string;
     protected version: string;
     protected tools: Record<string, any>;
     protected serverName: string;
     protected additionalDimensions: Record<string, any>;
-    private kustoHandler: KustoHandler;
+    private adxHandler: ADXHandler;
 
     constructor() {
-        this.name = "kusto";
-        this.tools = require("./schemas/kusto.json");
-        this.serverName = "kusto_server";
+        this.name = "ADX";
+        this.tools = require("./schemas/adx.json");
+        this.serverName = "adx_server";
         this.version = this.loadPackageVersion() || "0.1.5";
         this.additionalDimensions = {};
-        this.kustoHandler = new KustoHandler();
+        this.adxHandler = new ADXHandler();
 
         this.server = new Server(
             {
@@ -62,7 +62,7 @@ export class KustoServer {
     }
 
     protected async initializeHandlers(): Promise<void> {
-        await this.kustoHandler.initialize();
+        await this.adxHandler.initialize();
         this.setupToolHandlers();
     }
 
@@ -130,7 +130,7 @@ export class KustoServer {
                 );
             }
 
-            return await this.kustoHandler.executeQuery(params);
+            return await this.adxHandler.executeQuery(params);
         }
 
         throw new McpError(ErrorCode.InvalidParams, `Unknown tool name: ${name}`);
@@ -221,6 +221,6 @@ export class KustoServer {
 
 // Create and run server instance if this is the main module
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))){
-    const serverInstance = new KustoServer();
+    const serverInstance = new ADXServer();
     serverInstance.run().catch(console.error);
 }
