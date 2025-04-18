@@ -25,6 +25,31 @@ An MCP server implementation for querying data from Azure Data Explorer using KQ
 
 Add this to your `claude_desktop_config.json`:
 
+#### Docker
+
+```json
+{
+  "mcpServers": {
+    "azure-data-explorer": {
+      "command": "docker",
+      "args": [ 
+        "run", 
+        "-i", 
+        "--rm", 
+        "-e", 
+        "KUSTO_DEFAULT_CLUSTER", 
+        "-e", 
+        "KUSTO_DEFAULT_DATABASE", 
+        "mcp/azure-data-explorer" ],
+      "env": {
+        "KUSTO_DEFAULT_CLUSTER": "YOUR_KUSTO_CLUSTER_HERE",
+        "KUSTO_DEFAULT_DATABASE": "YOUR_DATABASE_HERE"
+      }
+    }
+  }
+}
+```
+
 #### NPX
 
 ```json
@@ -43,6 +68,14 @@ Add this to your `claude_desktop_config.json`:
     }
   }
 }
+```
+
+## Build
+
+Docker build:
+
+```bash
+docker build -t mcp/azure-data-explorer -f src/azure-data-explorer/Dockerfile .
 ```
 
 ## License
