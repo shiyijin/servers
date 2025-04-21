@@ -12,16 +12,6 @@ const mockClient = {
   execute: jest.fn() as jest.MockedFunction<(database: string, query: string, properties: any) => Promise<MockKustoResult>>
 };
 
-// mockClient.execute.mockResolvedValue({
-//   primaryResults: [
-//     {
-//       toString: () => JSON.stringify([
-//         { column1: 'value1', column2: 'value2' }
-//       ])
-//     }
-//   ]
-// });
-
 // Mock the entire modules
 jest.mock('azure-kusto-data', () => ({
   Client: jest.fn(() => mockClient as unknown as KustoClient),
