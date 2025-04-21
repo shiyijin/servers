@@ -12,6 +12,16 @@ const mockClient = {
   execute: jest.fn() as jest.MockedFunction<(database: string, query: string, properties: any) => Promise<MockKustoResult>>
 };
 
+// mockClient.execute.mockResolvedValue({
+//   primaryResults: [
+//     {
+//       toString: () => JSON.stringify([
+//         { column1: 'value1', column2: 'value2' }
+//       ])
+//     }
+//   ]
+// });
+
 // Mock the entire modules
 jest.mock('azure-kusto-data', () => ({
   Client: jest.fn(() => mockClient as unknown as KustoClient),
@@ -52,6 +62,20 @@ describe('KustoHandler', () => {
       const consoleSpy = jest.spyOn(console, 'log');
       await handler.initialize();
       //expect(consoleSpy).toHaveBeenCalledWith('KustoHandler initialized successfully');
+    });
+  });
+
+  describe('getClient', () => {
+    it('should not create a new client if clusterRrl only uppercase and lowercase differences', async () => {
+      await handler.initialize();
+
+      const clusterUrl = 'https://example.kusto.windows.net';
+      const client = await handler.getClient(clusterUrl);
+      const clusterUrl1 = 'https://EXAMPLE.kusto.windows.net';
+      const client1 = await handler.getClient(clusterUrl);
+
+      expect(mockClient.execute).not.toHaveBeenCalled();
+      expect(client).toBe(client1);
     });
   });
 

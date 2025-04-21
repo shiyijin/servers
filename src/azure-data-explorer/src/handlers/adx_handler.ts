@@ -22,6 +22,11 @@ export class ADXHandler {
   }
 
   private formatClusterUrl(cluster: string): string {
+    if(!cluster) 
+    {
+        return '';
+    }
+
     // If it's already a full URL, return as is
     if (cluster.startsWith('https://')) {
       return cluster;
@@ -30,12 +35,12 @@ export class ADXHandler {
     return `https://${cluster}.kusto.windows.net`;
   }
 
-  private async getClient(clusterUrl: string): Promise<KustoClient> {
+ async getClient(clusterUrl: string): Promise<KustoClient> {
     try {
       const formattedUrl = this.formatClusterUrl(clusterUrl);
       
       // Reinitialize client if cluster URL has changed
-      if (!this.kustoClient || this.currentClusterUrl !== formattedUrl) {
+      if (!this.kustoClient || this.currentClusterUrl?.toLowerCase() !== formattedUrl.toLowerCase()) {
         const credential = new AzureCliCredential();
         await credential.getToken(`${formattedUrl}/.default`);
         const kcsb = KustoConnectionStringBuilder.withTokenCredential(formattedUrl, credential);
@@ -91,6 +96,8 @@ export class ADXHandler {
 
       const clusterUrl = params.clusterUrl || process.env.KUSTO_DEFAULT_CLUSTER!;
       const database = params.database || process.env.KUSTO_DEFAULT_DATABASE!;
+      params.clusterUrl = clusterUrl;
+      params.database = database;
 
       const client = await this.getClient(clusterUrl);
       const properties = new ClientRequestProperties();
@@ -100,8 +107,6 @@ export class ADXHandler {
       const rawData = JSON.parse(rawString);
       const rowData = rawData.data || [];
 
-      params.clusterUrl = clusterUrl;
-      params.database = database;
       const responseObj = this.prepareResponseObj(params, true, rowData);
       const responseText = JSON.stringify(responseObj, null, 2);
       
