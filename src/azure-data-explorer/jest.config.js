@@ -14,8 +14,6 @@ export default {
       },
     ],
   },
-  // Setup files to run before tests
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testMatch: ['**/__tests__/**/*.test.ts'],
   collectCoverage: true,
   coverageDirectory: 'coverage',

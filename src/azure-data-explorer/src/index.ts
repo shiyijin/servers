@@ -3,7 +3,6 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { ErrorCode, McpError, CallToolRequestSchema, ListToolsRequestSchema, } from "@modelcontextprotocol/sdk/types.js";
 import { createRequire } from "module";
 import { ADXHandler } from "./handlers/adx_handler.js";
-import { logger, EventType } from "./utils/logger.js";
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -41,22 +40,12 @@ export class ADXServer {
 
         // Error handling
         this.server.onerror = (error) => {
-            logger.error("[MCP Error]", error);
-            logger.event(EventType.SERVER_ERROR, {
-                serverName: this.serverName,
-                version: this.version,
-                error: error.toString()
-            });
+            console.error("[MCP Error]", error);
         };
         
         process.on("SIGINT", async () => {
-            logger.info("Shutting down server...");
-            logger.event(EventType.SERVER_SHUTDOWN, {
-                serverName: this.serverName,
-                version: this.version,
-            });
+            console.info("Shutting down server...");
             await this.server.close();
-            logger.close();
             process.exit(0);
         });
     }
@@ -70,7 +59,6 @@ export class ADXServer {
         this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
             tools: Object.values(this.tools),
         }));
-        logger.info("Tools registered:", Object.keys(this.tools));
 
         this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
             const { name, arguments: args } = request.params;
@@ -88,20 +76,6 @@ export class ADXServer {
             } finally {
                 const endTime = Date.now();
                 const duration = endTime - startTime;
-
-                // Log the event with all dimensions
-                logger.event(
-                EventType.TOOL_INVOKED,
-                {
-                    name,
-                    duration,
-                    status,
-                    args: JSON.stringify(args),
-                    serverName: this.serverName,
-                    version: this.version,
-                    ...this.additionalDimensions
-                }
-                );
             }
 
             return result;
@@ -155,65 +129,35 @@ export class ADXServer {
 
                 // Navigate up from the current directory to find the package.json
                 packageJsonPath = path.resolve(dirPath, '..', 'package.json');
-                logger.info(`Strategy 1 - Looking for package.json at: ${packageJsonPath}`);
 
                 if (fs.existsSync(packageJsonPath)) {
                 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-                logger.info(`Found package.json with version: ${packageJson.version}`);
                 return packageJson.version || undefined;
                 }
             } catch (e) {
-                logger.warn(`Strategy 1 failed: ${e instanceof Error ? e.message : String(e)}`);
+                console.warn(`Strategy 1 failed: ${e instanceof Error ? e.message : String(e)}`);
             }
             return undefined;
         } catch (error) {
-            logger.error('Failed to load package version:', error);
+            console.error('Failed to load package version:', error);
             return undefined;
         }
     }
 
     public async run() {
-        logger.info(`Starting ${this.name} server initialization...`);
-        logger.event(EventType.SERVER_STARTED, {
-            serverName: this.serverName,
-            version: this.version,
-            toolCount: Object.keys(this.tools).length
-        });
-
         const startTime = Date.now();
 
         try {
             // Initialize all handlers before connecting
-            logger.info("Initializing handlers...");
             await this.initializeHandlers();
-            logger.info("Handlers initialized successfully");
-
+            
             // Use stdio transport
-            logger.info("Creating stdio transport...");
             const transport = new StdioServerTransport();
             
             // Connect to transport
-            logger.info("Connecting to transport...");
             await this.server.connect(transport);
-
-            logger.event(EventType.SERVER_CONNECTED, {
-                serverName: this.serverName,
-                version: this.version,
-                totalStartupTime: Date.now() - startTime,
-                transportType: 'stdio'
-            });
-
-            logger.info(`${this.name} MCP server running on stdio`);
         } catch (error) {
-            logger.error(`Failed to start ${this.name} server:`, error);
-
-            logger.event(EventType.SERVER_ERROR, {
-                serverName: this.serverName,
-                version: this.version,
-                error: error instanceof Error ? error.message : String(error),
-                phase: 'startup'
-            });
-
+            console.error(`Failed to start ${this.name} server:`, error);
             throw error;
         }
     }
