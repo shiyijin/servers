@@ -116,17 +116,17 @@ export class ADXServer {
                 clusterUrl: args.clusterUrl,
             };
 
-            if (!params.clusterUrl && !process.env.KUSTO_DEFAULT_CLUSTER) {
+            if (!params.clusterUrl && !process.env.ADX_DEFAULT_CLUSTER) {
                 throw new McpError(
                     ErrorCode.InvalidParams,
-                    "Cluster URL must be provided either in parameters or via KUSTO_DEFAULT_CLUSTER environment variable"
+                    "Cluster URL must be provided either in parameters or via ADX_DEFAULT_CLUSTER environment variable"
                 );
             }
 
-            if (!params.database && !process.env.KUSTO_DEFAULT_DATABASE) {
+            if (!params.database && !process.env.ADX_DEFAULT_DATABASE) {
                 throw new McpError(
                     ErrorCode.InvalidParams,
-                    "Database must be provided either in parameters or via KUSTO_DEFAULT_DATABASE environment variable"
+                    "Database must be provided either in parameters or via ADX_DEFAULT_DATABASE environment variable"
                 );
             }
 

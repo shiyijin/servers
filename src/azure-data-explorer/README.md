@@ -12,8 +12,8 @@ An MCP server implementation for querying data from Azure Data Explorer using KQ
   - Execute a Kusto query against a specified or default cluster and database".
   - Inputs:
     - `query` (string): The Kusto query to execute.
-    - `database` (string, optional): The database to query (optional if KUSTO_DEFAULT_DATABASE environment variable is set).
-    - `clusterUrl` (string, optional): The Kusto cluster URL (optional if KUSTO_DEFAULT_CLUSTER environment variable is set).
+    - `database` (string, optional): The database to query (optional if ADX_DEFAULT_DATABASE environment variable is set).
+    - `clusterUrl` (string, optional): The ADX cluster URL (optional if ADX_DEFAULT_CLUSTER environment variable is set).
 
 ## Configuration
 
@@ -37,13 +37,13 @@ Add this to your `claude_desktop_config.json`:
         "-i", 
         "--rm", 
         "-e", 
-        "KUSTO_DEFAULT_CLUSTER", 
+        "ADX_DEFAULT_CLUSTER", 
         "-e", 
-        "KUSTO_DEFAULT_DATABASE", 
+        "ADX_DEFAULT_DATABASE", 
         "mcp/azure-data-explorer" ],
       "env": {
-        "KUSTO_DEFAULT_CLUSTER": "YOUR_KUSTO_CLUSTER_HERE",
-        "KUSTO_DEFAULT_DATABASE": "YOUR_DATABASE_HERE"
+        "ADX_DEFAULT_CLUSTER": "YOUR_ADX_CLUSTER_HERE",
+        "ADX_DEFAULT_DATABASE": "YOUR_ADX_DATABASE_HERE"
       }
     }
   }
@@ -62,8 +62,8 @@ Add this to your `claude_desktop_config.json`:
         "@modelcontextprotocol/kusto"
       ],
       "env": {
-        "KUSTO_DEFAULT_CLUSTER": "YOUR_KUSTO_CLUSTER_HERE",
-        "KUSTO_DEFAULT_DATABASE": "YOUR_DATABASE_HERE"
+        "ADX_DEFAULT_CLUSTER": "YOUR_ADX_CLUSTER_HERE",
+        "ADX_DEFAULT_DATABASE": "YOUR_ADX_DATABASE_HERE"
       }
     }
   }

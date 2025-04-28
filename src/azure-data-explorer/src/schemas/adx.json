@@ -11,11 +11,11 @@
         },
         "database": {
           "type": "string",
-          "description": "The database to query (optional if KUSTO_DEFAULT_DATABASE environment variable is set)"
+          "description": "The database to query (optional if ADX_DEFAULT_DATABASE environment variable is set)"
         },
         "clusterUrl": {
           "type": "string",
-          "description": "The Kusto cluster URL (optional if KUSTO_DEFAULT_CLUSTER environment variable is set)"
+          "description": "The Kusto cluster URL (optional if ADX_DEFAULT_CLUSTER environment variable is set)"
         }
       },
       "required": ["query"],

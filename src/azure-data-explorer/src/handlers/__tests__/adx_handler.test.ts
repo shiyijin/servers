@@ -33,15 +33,15 @@ jest.mock('@azure/identity', () => ({
   }))
 }));
 
-describe('KustoHandler', () => {
+describe('ADXHandler', () => {
   let handler: ADXHandler;
 
   beforeEach(() => {
     jest.clearAllMocks();
     
     // Reset environment variables
-    process.env.KUSTO_DEFAULT_CLUSTER = 'default-cluster';
-    process.env.KUSTO_DEFAULT_DATABASE = 'default-db';
+    process.env.ADX_DEFAULT_CLUSTER = 'default-cluster';
+    process.env.ADX_DEFAULT_DATABASE = 'default-db';
 
     // Initialize handler
     handler = new ADXHandler();
@@ -51,7 +51,6 @@ describe('KustoHandler', () => {
     it('should initialize successfully', async () => {
       const consoleSpy = jest.spyOn(console, 'log');
       await handler.initialize();
-      //expect(consoleSpy).toHaveBeenCalledWith('KustoHandler initialized successfully');
     });
   });
 
@@ -62,7 +61,7 @@ describe('KustoHandler', () => {
       const clusterUrl = 'https://example.kusto.windows.net';
       const client = await handler.getClient(clusterUrl);
       const clusterUrl1 = 'https://EXAMPLE.kusto.windows.net';
-      const client1 = await handler.getClient(clusterUrl);
+      const client1 = await handler.getClient(clusterUrl1);
 
       expect(mockClient.execute).not.toHaveBeenCalled();
       expect(client).toBe(client1);
@@ -90,8 +89,8 @@ describe('KustoHandler', () => {
     });
 
     it('should handle missing required parameters', async () => {
-      process.env.KUSTO_DEFAULT_CLUSTER = '';
-      process.env.KUSTO_DEFAULT_DATABASE = '';
+      process.env.ADX_DEFAULT_CLUSTER = '';
+      process.env.ADX_DEFAULT_DATABASE = '';
 
       const result = await handler.executeQuery({
         query: 'test query'

@@ -16,7 +16,7 @@ export class ADXHandler {
     try {
       this.initialized = true;
     } catch (error) {
-      console.error('Failed to initialize KustoHandler:', error);
+      console.error('Failed to initialize ADXHandler:', error);
       throw error;
     }
   }
@@ -28,7 +28,7 @@ export class ADXHandler {
     }
 
     // If it's already a full URL, return as is
-    if (cluster.startsWith('https://')) {
+    if (cluster.toLowerCase().startsWith('https://')) {
       return cluster;
     }
     // Otherwise, format as Kusto cluster URL
@@ -82,20 +82,20 @@ export class ADXHandler {
   async executeQuery(params: KustoQueryParams): Promise<any> {
     try {
       if (!this.initialized) {
-        throw new Error('KustoHandler not initialized. Call initialize() first.');
+        throw new Error('ADXHandler not initialized. Call initialize() first.');
       }
 
       // Validate required parameters
-      if (!params.clusterUrl && !process.env.KUSTO_DEFAULT_CLUSTER) {
-        throw new Error('Cluster URL must be provided either in parameters or via KUSTO_DEFAULT_CLUSTER environment variable');
+      if (!params.clusterUrl && !process.env.ADX_DEFAULT_CLUSTER) {
+        throw new Error('Cluster URL must be provided either in parameters or via ADX_DEFAULT_CLUSTER environment variable');
       }
 
-      if (!params.database && !process.env.KUSTO_DEFAULT_DATABASE) {
-        throw new Error('Database must be provided either in parameters or via KUSTO_DEFAULT_DATABASE environment variable');
+      if (!params.database && !process.env.ADX_DEFAULT_DATABASE) {
+        throw new Error('Database must be provided either in parameters or via ADX_DEFAULT_DATABASE environment variable');
       }
 
-      const clusterUrl = params.clusterUrl || process.env.KUSTO_DEFAULT_CLUSTER!;
-      const database = params.database || process.env.KUSTO_DEFAULT_DATABASE!;
+      const clusterUrl = params.clusterUrl || process.env.ADX_DEFAULT_CLUSTER!;
+      const database = params.database || process.env.ADX_DEFAULT_DATABASE!;
       params.clusterUrl = clusterUrl;
       params.database = database;
 
