@@ -1,0 +1,163 @@
+import { Client as KustoClient, KustoConnectionStringBuilder, ClientRequestProperties } from "azure-kusto-data";
+import { AzureCliCredential } from "@azure/identity";
+
+export interface KustoQueryParams {
+  query?: string;
+  database?: string;
+  clusterUrl?: string;
+  table?: string;
+}
+
+export class ADXHandler {
+  private currentClusterUrl: string | null = null;
+  private kustoClient: KustoClient | null = null;
+  private initialized: boolean = false;
+
+  async initialize(): Promise<void> {
+    try {
+      this.initialized = true;
+    } catch (error) {
+      console.error('Failed to initialize ADXHandler:', error);
+      throw error;
+    }
+  }
+
+  private formatClusterUrl(cluster: string): string {
+    if(!cluster) 
+    {
+        return '';
+    }
+
+    // If it's already a full URL, return as is
+    if (cluster.toLowerCase().startsWith('https://')) {
+      return cluster;
+    }
+    // Otherwise, format as Kusto cluster URL
+    return `https://${cluster}.kusto.windows.net`;
+  }
+
+ async getClient(clusterUrl: string): Promise<KustoClient> {
+    try {
+      const formattedUrl = this.formatClusterUrl(clusterUrl);
+      
+      // Reinitialize client if cluster URL has changed
+      if (!this.kustoClient || this.currentClusterUrl?.toLowerCase() !== formattedUrl.toLowerCase()) {
+        const credential = new AzureCliCredential();
+        await credential.getToken(`${formattedUrl}/.default`);
+        const kcsb = KustoConnectionStringBuilder.withTokenCredential(formattedUrl, credential);
+        this.kustoClient = new KustoClient(kcsb);
+        this.currentClusterUrl = formattedUrl;
+      }
+      
+      return this.kustoClient;
+    } catch (error) {
+      console.error('Error creating Kusto client:', error);
+      throw error;
+    }
+  }
+
+  private prepareResponseObj(params: KustoQueryParams, success: boolean, data?: any[], error?: string) {
+    const baseResponse = {
+      success,
+      input: {
+        clusterUrl: this.formatClusterUrl(params.clusterUrl!),
+        database: params.database,
+        query: params.query
+      }
+    };
+
+    if (success && data) {
+      return {
+        ...baseResponse,
+        data,
+        message: `Query executed successfully. Retrieved ${data.length} rows.`
+      };
+    }
+    
+    return {
+      ...baseResponse,
+      error: error || 'Unknown error occurred while executing Kusto query'
+    };
+  }
+
+  async executeQuery(params: KustoQueryParams): Promise<any> {
+    try {
+      if (!this.initialized) {
+        throw new Error('ADXHandler not initialized. Call initialize() first.');
+      }
+
+      // Validate required parameters
+      if (!params.clusterUrl && !process.env.ADX_DEFAULT_CLUSTER) {
+        throw new Error('Cluster URL must be provided either in parameters or via ADX_DEFAULT_CLUSTER environment variable');
+      }
+
+      if (!params.database && !process.env.ADX_DEFAULT_DATABASE) {
+        throw new Error('Database must be provided either in parameters or via ADX_DEFAULT_DATABASE environment variable');
+      }
+
+      if (!params.query) {
+        throw new Error('Query must be provided in parameters');
+      }
+
+      const clusterUrl = params.clusterUrl || process.env.ADX_DEFAULT_CLUSTER!;
+      const database = params.database || process.env.ADX_DEFAULT_DATABASE!;
+      params.clusterUrl = clusterUrl;
+      params.database = database;
+
+      const client = await this.getClient(clusterUrl);
+      const properties = new ClientRequestProperties();
+      const results = await client.execute(database, params.query, properties);
+
+      const rawString = results.primaryResults[0].toString();
+      const rawData = JSON.parse(rawString);
+      const rowData = rawData.data || [];
+
+      const responseObj = this.prepareResponseObj(params, true, rowData);
+      const responseText = JSON.stringify(responseObj, null, 2);
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: responseText
+          }
+        ]
+      };
+
+    } catch (error: any) {
+      const responseObj = this.prepareResponseObj(params, false, undefined, error.message);
+      const responseText = JSON.stringify(responseObj, null, 2);
+      console.error('Error Response JSON:', responseText);
+      return {
+        content: [{
+          type: 'text',
+          text: responseText
+        }],
+        isError: true
+      };
+    }
+  }
+
+  async listTables(params: KustoQueryParams): Promise<any> {
+    if (!this.initialized) {
+      throw new Error('ADXHandler not initialized. Call initialize() first.');
+    }
+    const query = `.show tables`;
+    params.query = query;
+    return await this.executeQuery(params);
+  }
+
+  async getTableSchema(params: KustoQueryParams): Promise<any> {
+    if (!this.initialized) {
+      throw new Error('ADXHandler not initialized. Call initialize() first.');
+    }
+    // Validate required parameters
+    if (!params.table) {
+      throw new Error('Table must be provided in parameters to get schema');
+    }
+    const query = `.show table ${params.table} cslschema`;
+    params.query = query;
+    return await this.executeQuery(params);
+  }
+
+}

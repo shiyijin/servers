@@ -1,0 +1,86 @@
+# Azure Data Explorer MCP Server
+
+An MCP server implementation for querying data from Azure Data Explorer using KQL(Kusto Query Language).
+
+## Features
+
+- **Query Execution**: Execute KQL (Kusto Query Language) queries on Azure Data Explorer.
+
+## Tools
+
+- **execute_kusto_query**
+  - Execute a Kusto query against a specified or default cluster and database".
+  - Inputs:
+    - `query` (string): The Kusto query to execute.
+    - `database` (string, optional): The database to query (optional if ADX_DEFAULT_DATABASE environment variable is set).
+    - `clusterUrl` (string, optional): The ADX cluster URL (optional if ADX_DEFAULT_CLUSTER environment variable is set).
+
+## Configuration
+
+### Setting up Azure Credentials
+
+1. Ensure that you have already logged in via the 'az' tool using the command "az login" from the commandline.
+
+### Usage with Claude Desktop
+
+Add this to your `claude_desktop_config.json`:
+
+#### Docker
+
+```json
+{
+  "mcpServers": {
+    "azure-data-explorer": {
+      "command": "docker",
+      "args": [ 
+        "run", 
+        "-i", 
+        "--rm", 
+        "-e", 
+        "ADX_DEFAULT_CLUSTER", 
+        "-e", 
+        "ADX_DEFAULT_DATABASE", 
+        "mcp/azure-data-explorer" ],
+      "env": {
+        "ADX_DEFAULT_CLUSTER": "YOUR_ADX_CLUSTER_HERE",
+        "ADX_DEFAULT_DATABASE": "YOUR_ADX_DATABASE_HERE"
+      }
+    }
+  }
+}
+```
+
+#### NPX
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/kusto"
+      ],
+      "env": {
+        "ADX_DEFAULT_CLUSTER": "YOUR_ADX_CLUSTER_HERE",
+        "ADX_DEFAULT_DATABASE": "YOUR_ADX_DATABASE_HERE"
+      }
+    }
+  }
+}
+```
+
+## Build
+
+Docker build:
+
+```bash
+docker build -t mcp/azure-data-explorer -f src/azure-data-explorer/Dockerfile .
+```
+
+## Acknowledgments
+We would like to acknowledge the initial contributors from **Microsoft MAI-STCA** team for their efforts in building the foundation of this MVP server.
+
+## License
+
+This MCP server is licensed under the MIT License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License. For more details, please see the LICENSE file in the project repository.

@@ -13,6 +13,7 @@ Each MCP server is implemented with either the [Typescript MCP SDK](https://gith
 These servers aim to demonstrate MCP features and the TypeScript and Python SDKs.
 
 - **[AWS KB Retrieval](src/aws-kb-retrieval-server)** - Retrieval from AWS Knowledge Base using Bedrock Agent Runtime
+- **[Azure Data Explorer](src/azure-data-explorer)** - Query data from Azure Data Explorer using KQL(Kusto Query Language)
 - **[Brave Search](src/brave-search)** - Web and local search using Brave's Search API
 - **[EverArt](src/everart)** - AI image generation using various models
 - **[Everything](src/everything)** - Reference / test server with prompts, resources, and tools

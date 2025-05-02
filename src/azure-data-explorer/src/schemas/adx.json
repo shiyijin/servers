@@ -1,0 +1,66 @@
+{
+  "execute_kusto_query": {
+    "name": "execute_kusto_query",
+    "description": "Execute a Kusto query against a specified or default cluster and database",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "The Kusto query to execute"
+        },
+        "database": {
+          "type": "string",
+          "description": "The database to query (optional if ADX_DEFAULT_DATABASE environment variable is set)"
+        },
+        "clusterUrl": {
+          "type": "string",
+          "description": "The Kusto cluster URL (optional if ADX_DEFAULT_CLUSTER environment variable is set)"
+        }
+      },
+      "required": ["query"],
+      "additionalProperties": false
+    }
+  },
+  "list_tables": {
+    "name": "list_tables",
+    "description": "List the tables in a specified or default cluster and database",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "database": {
+          "type": "string",
+          "description": "The database to query (optional if ADX_DEFAULT_DATABASE environment variable is set)"
+        },
+        "clusterUrl": {
+          "type": "string",
+          "description": "The Kusto cluster URL (optional if ADX_DEFAULT_CLUSTER environment variable is set)"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "get_table_schema": {
+    "name": "get_table_schema",
+    "description": "Get the table schema in a specified or default cluster and database",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "table": {
+          "type": "string",
+          "description": "The table to get the schema"
+        },
+        "database": {
+          "type": "string",
+          "description": "The database to query (optional if ADX_DEFAULT_DATABASE environment variable is set)"
+        },
+        "clusterUrl": {
+          "type": "string",
+          "description": "The Kusto cluster URL (optional if ADX_DEFAULT_CLUSTER environment variable is set)"
+        }
+      },
+      "required": ["table"],
+      "additionalProperties": false
+    }
+  }
+}
