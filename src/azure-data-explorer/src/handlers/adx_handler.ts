@@ -2,9 +2,10 @@ import { Client as KustoClient, KustoConnectionStringBuilder, ClientRequestPrope
 import { AzureCliCredential } from "@azure/identity";
 
 export interface KustoQueryParams {
-  query: string;
+  query?: string;
   database?: string;
   clusterUrl?: string;
+  table?: string;
 }
 
 export class ADXHandler {
@@ -94,6 +95,10 @@ export class ADXHandler {
         throw new Error('Database must be provided either in parameters or via ADX_DEFAULT_DATABASE environment variable');
       }
 
+      if (!params.query) {
+        throw new Error('Query must be provided in parameters');
+      }
+
       const clusterUrl = params.clusterUrl || process.env.ADX_DEFAULT_CLUSTER!;
       const database = params.database || process.env.ADX_DEFAULT_DATABASE!;
       params.clusterUrl = clusterUrl;
@@ -132,4 +137,27 @@ export class ADXHandler {
       };
     }
   }
+
+  async listTables(params: KustoQueryParams): Promise<any> {
+    if (!this.initialized) {
+      throw new Error('ADXHandler not initialized. Call initialize() first.');
+    }
+    const query = `.show tables`;
+    params.query = query;
+    return await this.executeQuery(params);
+  }
+
+  async getTableSchema(params: KustoQueryParams): Promise<any> {
+    if (!this.initialized) {
+      throw new Error('ADXHandler not initialized. Call initialize() first.');
+    }
+    // Validate required parameters
+    if (!params.table) {
+      throw new Error('Table must be provided in parameters to get schema');
+    }
+    const query = `.show table ${params.table} cslschema`;
+    params.query = query;
+    return await this.executeQuery(params);
+  }
+
 }
